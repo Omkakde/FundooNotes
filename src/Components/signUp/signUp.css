@@ -2,8 +2,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  /* height: 100vh; */
-  border: 1px solid rgb(88, 86, 86);
+  
+ 
   background-color: #ffff;
 }
 
@@ -11,11 +11,13 @@
   display: flex;
   width: 800px;
   background-color: #fff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 1px 6px 20px rgba(0, 0, 0, 0.2);
   border-radius: 8px;
   overflow: hidden;
 }
-
+h6{
+  font-size: 1rem;
+}
 .leftSide, .rightSide {
   padding: 20px;
 }
@@ -89,15 +91,130 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #f7f9fc;
+  background-color: #ffffff;
 }
 
-.rightSide img {
-  width: 100px;
-  margin-bottom: 10px;
+#rightSide-img {
+  width: 300px;
+ 
 }
 
 .rightSide p {
   text-align: center;
   color: #6c757d;
+}
+
+
+
+@media screen and (max-width: 768px) {
+  .signup-card {
+    flex-direction: column;
+    width: 100%;
+    padding: 20px;
+  }
+
+  .leftSide, .rightSide {
+    width: 100%;
+    padding: 15px;
+  }
+
+  #name {
+    font-size: 1.5em;
+  }
+
+  .signup-form h2 {
+    font-size: 1.2em;
+  }
+
+  .name-fields, .field-wrapper, .password-field {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .field-wrapper input {
+    width: 100%;
+  }
+
+  .button-part {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .button-part .signin {
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  .button-part .register {
+    width: 100%;
+    padding: 12px 0;
+    text-align: center;
+  }
+
+  .rightSide img {
+    width: 80px;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+
+  .signup-card {
+    width: 70%;
+    height: 510px;
+   
+  
+    
+    padding-right: 10%;
+  }
+  .leftSide{
+    margin-right: 3%;
+  }
+  #name {
+    font-size: 1rem;
+    padding: 0;
+    margin: 0;
+  }
+
+  .button-part {
+    font-size: 0.9rem;
+    gap: 10px;
+    margin-top: 0; 
+    display: flex;
+    flex-direction: row; 
+    align-items: center; 
+  }
+
+  h2 {
+    display: block;
+    font-size: 0.8rem; 
+    margin: 0.83em 0; 
+    font-weight: bold;
+  }
+
+  .field-wrapper input {
+    width: 100%; 
+  }
+
+  p {
+    display: block;
+  }
+
+  .hint {
+    margin-top: -9%;
+    font-size: 0.8rem;
+  }
+  button{
+    margin: 0%;
+    padding: 0%;
+    
+  }
+  .rightSide {
+    display: none;
+  }
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+   
+}
 }

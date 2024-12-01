@@ -5,6 +5,8 @@ import { loginApiCall } from "../../utils/Apis";
 import { useNavigate } from "react-router-dom";
 import "./login.css";
 import Box from "@mui/material/Box";
+import Snackbar from "@mui/material/Snackbar"; 
+import Alert from "@mui/material/Alert";
 
 export default function Login() {
   const [showErr, setErrorMsg] = useState(false);
@@ -13,16 +15,21 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [toasterOpen, setToasterOpen] = useState(false); 
+  const [toasterMessage, setToasterMessage] = useState(""); 
+  const [toasterSeverity, setToasterSeverity] = useState("success"); 
 
   const navigate = useNavigate();
   const passwordRegex = /^[a-zA-Z0-9@^]+$/;
 
-  const handleLogin = (e) => {
+  const handleToasterClose = () => setToasterOpen(false); 
+
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     let valid = true;
 
-    // Validate email
+  
     if (!getEmail.trim()) {
       setErrorMsg(true);
       valid = false;
@@ -30,7 +37,7 @@ export default function Login() {
       setErrorMsg(false);
     }
 
-    // Validate password
+   
     if (!password || !passwordRegex.test(password)) {
       setErrorPass(true);
       valid = false;
@@ -40,111 +47,129 @@ export default function Login() {
 
     if (valid) {
       setLoading(true);
-      setErrorMessage(""); 
+      setErrorMessage("");
 
       loginApiCall(getEmail, password)
-      .then((response) => {
-        const { tokens } = response.data;
-    
-        if (tokens) {
-          localStorage.setItem("accessToken", tokens.access);
-          localStorage.setItem("refreshToken", tokens.refresh);
-        }
-    
-        
-        if (localStorage.getItem("accessToken")) {
-          setErrorMessage("Login successful.");
-          navigate("/home"); 
-        } else {
-          setErrorMessage("Login failed.");
-        }
-      })
-      .catch(() => {
-        setErrorMessage("Login failed.");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-    
+        .then((response) => {
+          const accessToken = localStorage.getItem("accessToken");
+
+          if (accessToken) {
+            setErrorMessage("Login successful.");
+            setToasterMessage("Login successful!");
+            setToasterSeverity("success");
+            setToasterOpen(true); 
+            navigate("/dashboard");
+          } else {
+            setErrorMessage("Failed to store token.");
+            setToasterMessage("Failed to store token.");
+            setToasterSeverity("error");
+            setToasterOpen(true); 
+          }
+        })
+        .catch((error) => {
+          console.error("Login Error:", error.response?.data || error.message);
+          setErrorMessage("Invalid credentials.");
+          setToasterMessage("Login failed. Please check your credentials.");
+          setToasterSeverity("error");
+          setToasterOpen(true); 
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }
   };
 
   return (
-    <div className="main-container">
-    <Box
-    component="form"
-    onSubmit={handleLogin}
-    sx={{ "& .MuiTextField-root": { m: 1, width: "25ch" } }}
-    noValidate
-    autoComplete="off"
-  >
-    <div className="main">
-      <div className="head">
-        <h3 id="head-text">Fundoo</h3>
-        <h3 className="firstLine">Sign In</h3>
-        <h3 className="secondLine">Use Your Fundoo Account</h3>
-      </div>
-
-
-      <div className="name-container">
-        <TextField
-        style={{ margin: '8px', width: '80%' }}
-          id="outlined-first-name"
-          value={getEmail}
-          onChange={(e) => setEmail(e.target.value)}
-          label="Email"
-          variant="outlined"
-          fullWidth
-          required
-        />
-        {showErr && <span className="emailErr">Email is required.</span>}
-      </div>
-
-
-      <div className="password-container">
-      
-        <TextField
-        style={{ margin: '8px', width: '80%' }}
-          id="outlined-password-input"
-          label="Password"
-          className="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          autoComplete="current-password"
-          fullWidth
-          required
-        />
-        <h5 className="line1">
-          Forgot Password?
-        </h5>
-        {showPass && (
-          <span className="passwordErr">Password is invalid.</span>
-        )}
-      </div>
-
-
-      {errorMessage && <div className="errorMessage">{errorMessage}</div>}
-
-
-      <div className="signin-register">
-        <a href="#"  className="line3">
-      
-          <h4 onClick={() => navigate('/signUp')}>Create Account</h4>
-        </a>
-        <div className="buttoncnt">
-        <Button
-          type="submit"
-          className="submit-btn"
-          variant="contained"
-          disabled={loading}
+    <div>
+      <div className="main-container">
+        <Box
+          component="form"
+          onSubmit={handleLogin}
+          sx={{ "& .MuiTextField-root": { m: 1, width: "25ch" } }}
+          noValidate
+          autoComplete="off"
         >
-          {loading ? "Logging In" : "Login"}
-        </Button>
-        </div>
+          <div className="main">
+            <div className="head">
+              <h3 id="head-text">Fundoo</h3>
+              <h3 className="firstLine">Sign In</h3>
+              <h3 className="secondLine">Use Your Fundoo Account</h3>
+            </div>
+
+            <div className="name-container">
+              <TextField
+                style={{ margin: "8px", width: "80%" }}
+                id="outlined-first-name"
+                value={getEmail}
+                onChange={(e) => setEmail(e.target.value)}
+                label="Email"
+                variant="outlined"
+                fullWidth
+                required
+              />
+              {showErr && <span className="emailErr">Email is required.</span>}
+            </div>
+
+            <div className="password-container">
+              <TextField
+                style={{ margin: "8px", width: "80%" }}
+                id="outlined-password-input"
+                label="Password"
+                className="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                fullWidth
+                required
+              />
+              <h5 className="line1">Forgot Password?</h5>
+              {showPass && (
+                <span className="passwordErr">Password is invalid.</span>
+              )}
+            </div>
+
+            {errorMessage && (
+              <div className="errorMessage" style={{ color: "red" }}>
+                {errorMessage}
+              </div>
+            )}
+
+            <div className="signin-register">
+              <a href="#" className="line3">
+                <h4 onClick={() => navigate("/signUp")}>Create Account</h4>
+              </a>
+              <div className="buttoncnt">
+                <Button
+                  type="submit"
+                  className="submit-btn"
+                  variant="contained"
+                  disabled={loading}
+                >
+                  login
+                </Button>
+              </div>
+            </div>
+          </div>
+        </Box>
       </div>
+
+      {/* Snackbar for success or error messages */}
+      <Snackbar
+        open={toasterOpen}
+        autoHideDuration={6000}
+        onClose={handleToasterClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleToasterClose}
+          severity={toasterSeverity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {toasterMessage}
+        </Alert>
+      </Snackbar>
     </div>
-  </Box>
-  </div>
   );
 }

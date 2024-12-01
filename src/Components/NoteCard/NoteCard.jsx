@@ -10,9 +10,12 @@ import "./NoteCard.css";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import RestoreFromTrashIcon from "@mui/icons-material/RestoreFromTrash";
 import UnarchiveIcon from "@mui/icons-material/Unarchive";
-import { archiveTrashApiCall } from "../../utils/Apis";
+import { archiveTrashApiCall,deleteNotesApiCall , colorNotesApiCall} from "../../utils/Apis";
 import Modal from "@mui/material/Modal";
 import AddNote from "../AddNote/AddNoteCard.jsx";
+
+
+
 export default function NoteCard(props) {
   const { noteDetails, handleNotesList, container } = props;
   const [bgColor, setBgColor] = useState(noteDetails.color || "#ffffff");
@@ -29,6 +32,17 @@ export default function NoteCard(props) {
 
   const handleColorSelect = (color) => {
     setBgColor(color);
+    const payload = {
+      noteIdList: [noteDetails.id],
+      color: color,
+    };
+
+    colorNotesApiCall("/notes/changesColorNotes", payload)
+      .then(() => {
+        handleNotesList({ ...noteDetails, color }, "color");
+      })
+      .catch((error) => console.error("Error updating color:", error));
+
     setOpenColorMenu(false);
   };
 
@@ -51,7 +65,7 @@ export default function NoteCard(props) {
     }
     if (action === "delete_forever") {
       payload.isDeleted = true;
-      archiveTrashApiCall("/notes/deleteForeverNotes", payload);
+      deleteNotesApiCall("/notes/deleteForeverNotes", payload);
     }
 
     if (action === "trash") {

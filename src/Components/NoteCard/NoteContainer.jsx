@@ -3,11 +3,13 @@ import { getAllNotesApiCall } from "../../utils/Apis";
 import NoteCard from "./NoteCard.jsx";
 import AddNote from "../AddNote/AddNoteCard.jsx";
 import "./NoteContainer.scss";
+import { useOutletContext } from "react-router-dom";
 
 function NotesContainer() {
   const [notesList, setNotesList] = useState([]);
+  const { search } = useOutletContext(); 
 
-  // Fetch data on initial render
+  
   useEffect(() => {
     fetchData();
   }, []);
@@ -16,6 +18,7 @@ function NotesContainer() {
     const res = await getAllNotesApiCall();
     if (res?.data?.data) {
       setNotesList(res.data.data.data);
+      console.log(res);
     }
   };
 
@@ -37,22 +40,30 @@ function NotesContainer() {
       console.error("Unknown action:", action);
     }
   };
-  
+
+  // Filter notes based on search query
+  const filteredNotes = notesList.filter(
+    (note) =>
+      note.title.toLowerCase().includes(search.toLowerCase()) ||
+      note.description.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
-    <div className="main-container">
+    <>
       <AddNote handleNotesList={handleNotesList} />
-      <div className="note-container">
-        {notesList.map((noteObj) => (
-          <NoteCard
-            key={noteObj.id}
-            noteDetails={noteObj}
-            handleNotesList={handleNotesList}
-            container={"notes"}
-          />
-        ))}
+      <div className="space-container">
+        <div className="note-container">
+          {filteredNotes.map((noteObj) => ( 
+            <NoteCard
+              key={noteObj.id}
+              noteDetails={noteObj}
+              handleNotesList={handleNotesList}
+              container={"notes"}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

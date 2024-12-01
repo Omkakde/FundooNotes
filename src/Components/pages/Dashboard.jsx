@@ -1,75 +1,87 @@
-import { Outlet, useNavigate } from "react-router-dom";
-import Drawer from "@mui/material/Drawer";
-import { useState } from "react";
-
 import "./Dashboard.scss";
-
-import AppBar from "../Header/AppBar";
-
-import noteIcon from "../../assets/images/note.svg";
-import menuReminderIcon from "../../assets/images/menuReminder.svg";
-import menuEditIcon from "../../assets/images/menuEdit.svg";
-import menuArchiveIcon from "../../assets/images/menuArchive.svg";
-import menuTrashIcon from "../../assets/images/menuTrash.svg";
+import AppBar from './../Header/AppBar';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
+import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined';
+import ModeEditOutlinedIcon from '@mui/icons-material/ModeEditOutlined';
+import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import { Outlet } from 'react-router-dom';
 
 function Dashboard() {
-  const [drawerState, setDrawerState] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false); 
   const navigate = useNavigate();
+  const [search, setSearch] = useState(""); 
 
-  const toggleDrawer = () => {
-    setDrawerState(!drawerState);
+  const handleSearchChange = (event) => {
+    setSearch(event.target.value);
   };
 
-  const handleNavigation = (route) => {
-    navigate(route);
-    setDrawerState(false); // Close the drawer after navigation
+  const toggleDrawer = () => {
+    setDrawerOpen(!drawerOpen);
+  };
+
+ 
+  const handleMouseEnter = () => {
+    setDrawerOpen(true);
+  };
+
+  
+  const handleMouseLeave = () => {
+    setDrawerOpen(false);
   };
 
   return (
-    <>
-      <AppBar toggleDrawer={toggleDrawer} sx={{ zIndex: 2 }} />
-      <div className="slide">
-        <Drawer
-          className="slider"
-          open={drawerState}
-          onClose={() => setDrawerState(false)}
-          hideBackdrop
-          sx={{ zIndex: 1 }}
+    <div className="dashboard-main-cnt">
+      <AppBar toggleDrawer={toggleDrawer}  searchText={search} handleSearchChange={handleSearchChange}  sx={{ zIndex: 2 }} />
+      <div className="siderBar">
+        <div
+          className={`drawer-icon-cnt ${drawerOpen ? 'open' : ''}`}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         >
-          <div className="slidename" onClick={() => handleNavigation("/notes")}>
-            <img className="slideimg" src={noteIcon} alt="Notes" />
-            <span>Notes</span>
+          <div className="drawer-icon-item" onClick={() => navigate('notes')}>
+            <div className="drawer-icon">
+              <LightbulbOutlinedIcon />
+            </div>
+            {drawerOpen && <div className="drawer-icon-text">Notes</div>}
           </div>
-          <div
-            className="slidename"
-            onClick={() => handleNavigation("/reminders")}
-          >
-            <img className="slideimg" src={menuReminderIcon} alt="Reminders" />
-            <span>Reminders</span>
-          </div>
-          <div
-            className="slidename"
-            onClick={() => handleNavigation("/edit-labels")}
-          >
-            <img className="slideimg" src={menuEditIcon} alt="Edit labels" />
-            <span>Edit labels</span>
-          </div>
-          <div
-            className="slidename"
-            onClick={() => handleNavigation("/archive")}
-          >
-            <img className="slideimg" src={menuArchiveIcon} alt="Archive" />
-            <span>Archive</span>
-          </div>
-          <div className="slidename" onClick={() => handleNavigation("/trash")}>
-            <img className="slideimg" src={menuTrashIcon} alt="Trash" />
-            <span>Trash</span>
-          </div>
-        </Drawer>
-      </div>
 
-      <Outlet />
-    </>
+          <div className="drawer-icon-item">
+            <div className="drawer-icon">
+              <NotificationsOutlinedIcon />
+            </div>
+            {drawerOpen && <div className="drawer-icon-text">Notifications</div>}
+          </div>
+
+          <div className="drawer-icon-item">
+            <div className="drawer-icon">
+              <ModeEditOutlinedIcon />
+            </div>
+            {drawerOpen && <div className="drawer-icon-text">Edit</div>}
+          </div>
+
+          <div className="drawer-icon-item" onClick={() => navigate('Archive')}>
+            <div className="drawer-icon">
+              <ArchiveOutlinedIcon />
+            </div>
+            {drawerOpen && <div className="drawer-icon-text">Archive</div>}
+          </div>
+
+          <div className="drawer-icon-item" onClick={() => navigate('Trash')}>
+            <div className="drawer-icon">
+              <DeleteOutlineOutlinedIcon />
+            </div>
+            {drawerOpen && <div className="drawer-icon-text">Trash</div>}
+          </div>
+        </div>
+
+        <div className="dashboard-outlet-cnt">
+          <Outlet context={{ search }}  />
+        </div>
+      </div>
+    </div>
   );
 }
 

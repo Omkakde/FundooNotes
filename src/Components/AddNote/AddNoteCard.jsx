@@ -7,28 +7,40 @@ import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import PaletteIcon from "@mui/icons-material/Palette";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import UndoIcon from "@mui/icons-material/Undo";
 import RedoIcon from "@mui/icons-material/Redo";
 import React, { useState } from "react";
-import { addNoteApi, updateNotesApiCall } from "../../utils/Apis";
+import { addNoteApi, colorNotesApiCall, updateNotesApiCall ,archiveTrashApiCall} from "../../utils/Apis";
 
-const AddNoteCard = ({ mode = "add", noteDetails, handleNotesList }) => {
+
+
+const AddNoteCard = ({ mode = "add", noteDetails = {}, handleNotesList }) => {
   const [isExpanded, setIsExpanded] = useState(mode === "add" ? false : true);
-  const [title, setTitle] = useState(mode === "add" ? "" : noteDetails.title);
-  const [description, setDescription] = useState(
-    mode === "add" ? "" : noteDetails.description
-  );
-  const [color, setColor] = useState("white");
-  const [openColor, setOpenColorMenu] = useState(false); // Track if the color menu is open
+  const [title, setTitle] = useState(mode === "add" ? "" : noteDetails.title || "");
+  const [description, setDescription] = useState(mode === "add" ? "" : noteDetails.description || "");
+  const [color, setColor] = useState(noteDetails.color || ""); 
+  const [openColor, setOpenColorMenu] = useState(false); 
 
   const handleInputClick = () => {
-    setIsExpanded(!isExpanded);
     setIsExpanded(true);
+  };
+
+  const handleNoteIconClick = (action) => {
+    if (action === "archive") {
+      const payload = {
+        noteId: noteDetails.id,
+      };
+      payload.isArchived = true;
+      archiveTrashApiCall("/notes/archiveNotes", payload);
+    }
   };
 
   const handleClose = () => {
     setIsExpanded(false);
-    setColor("#ffffff");
 
     if (mode === "add") {
       handleAddNote();
@@ -37,7 +49,7 @@ const AddNoteCard = ({ mode = "add", noteDetails, handleNotesList }) => {
         noteId: noteDetails.id,
         title: title,
         description: description,
-        color: color,
+        color: color, 
       };
 
       updateNotesApiCall(payload)
@@ -54,14 +66,14 @@ const AddNoteCard = ({ mode = "add", noteDetails, handleNotesList }) => {
         });
     }
 
-    // Reset fields
-    setColor("");
+   
+    setColor(noteDetails.color || ""); 
     setTitle("");
     setDescription("");
   };
 
   const handleAddNote = async () => {
-    if (title && description) {
+    if (title && description) { 
       const payload = { title, description, color };
 
       const response = await addNoteApi(payload);
@@ -71,11 +83,15 @@ const AddNoteCard = ({ mode = "add", noteDetails, handleNotesList }) => {
             id: response.id,
             title: title,
             description: description,
+            color: color,
             quantity: response.quantity,
           },
           "add"
         );
-        // add response data not static data
+        toast("Note added successfully!", {
+          style: { backgroundColor: "#31ff11", color: "black" },
+        });
+        
         console.log("Note added successfully:", response);
       } else {
         console.log("Title and description are required.");
@@ -83,18 +99,28 @@ const AddNoteCard = ({ mode = "add", noteDetails, handleNotesList }) => {
     }
   };
 
-  const handleColorSelect = (color) => {
-    console.log(" changing", color);
-    setColor(color);
-    setOpenColorMenu(false); // Close the color menu after selection
+  const handleColorSelect = (selectedColor) => {
+    setColor(selectedColor); 
+    const payload = {
+      noteIdList: [noteDetails.id],
+      color: selectedColor,
+    };
+
+    colorNotesApiCall("/notes/changesColorNotes", payload)
+      .then(() => {
+        handleNotesList({ ...noteDetails, color: selectedColor }, "color"); 
+      })
+      .catch((error) => console.error("Error updating color:", error));
+
+    setOpenColorMenu(false);
   };
 
   const handleColorMenuClick = () => {
-    setOpenColorMenu(!openColor); // Toggle the color menu visibility
+    setOpenColorMenu(!openColor);
   };
 
   return (
-    <div>
+    <>
       {!isExpanded ? (
         <div className="collapsed-note" onClick={handleInputClick}>
           <input
@@ -111,16 +137,21 @@ const AddNoteCard = ({ mode = "add", noteDetails, handleNotesList }) => {
           </div>
         </div>
       ) : (
-        <div className="expanded-note" style={{ backgroundColor: color }}>
+        <div
+          className="expanded-note"
+          style={{ backgroundColor: color || noteDetails?.color || "#ffffff" }}
+        >
           <input
             type="text"
             placeholder="Title"
             className="note-title"
             value={title}
+            style={{ backgroundColor: color || noteDetails?.color || "#ffffff" }}
             onChange={(e) => setTitle(e.target.value)}
           />
           <textarea
             placeholder="Take a note..."
+            style={{ backgroundColor: color || noteDetails?.color || "#ffffff" }}
             className="note-input"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -131,7 +162,7 @@ const AddNoteCard = ({ mode = "add", noteDetails, handleNotesList }) => {
               <PersonAddIcon className="icon" />
               <PaletteIcon className="icon" onClick={handleColorMenuClick} />
               <ImageIcon className="icon" />
-              <ArchiveIcon className="icon" />
+              <ArchiveIcon className="icon" onClick={() => handleNoteIconClick("archive")} />
               <MoreVertIcon className="icon" />
               <UndoIcon className="icon" />
               <RedoIcon className="icon" />
@@ -144,27 +175,23 @@ const AddNoteCard = ({ mode = "add", noteDetails, handleNotesList }) => {
           {openColor && (
             <div className="color-menu">
               <div className="color-row">
-                {[
-                  "#ffeb3b",
-                  "#ff5722",
-                  "#4caf50",
-                  "#03a9f4",
-                  "#9c27b0",
-                  "#e91e63",
-                ].map((color) => (
-                  <div
-                    key={color}
-                    className="color-option"
-                    style={{ backgroundColor: color }}
-                    onClick={() => handleColorSelect(color)}
-                  />
-                ))}
+                {["#FFEB3B", "#FF7043", "#66BB6A", "#29B6F6", "#AB47BC", "#FF4081"].map(
+                  (color) => (
+                    <div
+                      key={color}
+                      className="color-option"
+                      style={{ backgroundColor: color }}
+                      onClick={() => handleColorSelect(color)}
+                    />
+                  )
+                )}
               </div>
             </div>
           )}
         </div>
       )}
-    </div>
+      <ToastContainer />
+    </>
   );
 };
 

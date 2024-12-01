@@ -4,10 +4,11 @@ import React, { useEffect, useState } from "react";
 import { getArchiveTrashNotesList } from "../../utils/Apis"; 
 import "./ArchiveContainer.scss";
 import NoteCard from "../NoteCard/NoteCard.jsx";
-
-
+import { useOutletContext } from "react-router-dom";
+import emptyTrashImg from "../../assets/images/NoData.png";
 export default function ArchiveContainer() {
   const [archiveList, setArchiveList] = useState([]);
+  const { search } = useOutletContext(); 
 
   useEffect(() => {
     fetchArchiveNotes();
@@ -36,22 +37,40 @@ export default function ArchiveContainer() {
       setArchiveList(updatedList);
     }
   };
+  
+   // Filter notes based on search query
+   const filteredNotes = archiveList.filter(
+    (note) =>
+      note.title.toLowerCase().includes(search.toLowerCase()) ||
+      note.description.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="main-container">
-    <div className="note-container">
-      {archiveList.map((archiveObj) => (
-        <NoteCard
-          key={archiveObj.id}
-          noteDetails={archiveObj}
-          handleNotesList={handleArchiveList}
-          container={"archive"}
-        />
-      ))}
+      <div className="note-container">
+        {filteredNotes.length === 0 ? (
+          <div className="empty-trash-container">
+            <img
+              id="imgNoData"
+              src={emptyTrashImg}
+              alt="No Trash"
+              className="empty-trash-img"
+            />
+          </div>
+        ) : (
+          filteredNotes.map((archiveObj) => (
+            <NoteCard
+              key={archiveObj.id}
+              noteDetails={archiveObj}
+              handleNotesList={handleArchiveList}
+              container={"archive"}
+            />
+          ))
+        )}
+      </div>
     </div>
-  </div>
-  
   );
+  
 }
 
 

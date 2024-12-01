@@ -1,5 +1,5 @@
 import React from 'react';
-import RoutingModule from './RoutingModule';
+import RoutingModule from './routings/RoutingModule';
 
 
 function App() {

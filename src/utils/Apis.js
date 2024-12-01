@@ -2,14 +2,34 @@ import axios from "axios";
 
 const BASE_URL = "https://fundoonotes.incubation.bridgelabz.com/api";
 
-export const loginApiCall = async (email, password) => {
-  const res = await axios.post(
-    "https://fundoonotes.incubation.bridgelabz.com/api/user/login",
-    { email: email, password: password }
-  );
-  console.log(res);
-  localStorage.setItem("accessToken", res?.data?.id);
+
+export const loginApiCall = (email, password) => {
+  return axios
+    .post("https://fundoonotes.incubation.bridgelabz.com/api/user/login", {
+      email: email,
+      password: password,
+    })
+
+    .then((res) => {
+      console.log("API Response:", res.data);     
+      const accessToken = res?.data?.id || res?.data?.tokens?.access;
+     
+      
+      const username = res?.data?.firstName; 
+      const userEmail = res?.data?.email;
+     
+      console.log(username,userEmail);
+      if (accessToken) {
+        localStorage.setItem("accessToken", accessToken);
+        
+        localStorage.setItem("username", username);
+        localStorage.setItem("userEmail", userEmail);
+      }
+
+      return res; 
+    });
 };
+
 
 export const SignUpApiCall = async (payload, END_POINT) => {
   console.log(payload);
@@ -27,6 +47,15 @@ export const getAllNotesApiCall = () => {
 };
 
 export const archiveTrashApiCall = (endpoint, payload) => {
+  const accessToken = localStorage.getItem("accessToken");
+  return axios.post(`${BASE_URL}${endpoint}`, payload, {
+    headers: {
+      Authorization: `${accessToken}`,
+    },
+  });
+};
+
+export const deleteNotesApiCall = (endpoint, payload) => {
   const accessToken = localStorage.getItem("accessToken");
   return axios.post(`${BASE_URL}${endpoint}`, payload, {
     headers: {
@@ -78,3 +107,16 @@ export const updateNotesApiCall = async (payload) => {
   console.log("Note updated successfully:", response.data);
   return response.data;
 };
+
+
+export const colorNotesApiCall= async(END_POINT,Payload)=>{
+  const token = localStorage.getItem("accessToken");
+  return await axios.post(`${BASE_URL}${END_POINT}`,
+   Payload,
+   {
+      headers:{
+       Authorization:`${token}`,
+      },
+   }
+ )
+}

@@ -1,35 +1,161 @@
-/* Sidebar Drawer */
-.slider .MuiDrawer-paper {
-  width: 250px; /* Sidebar width */
-  margin-top: 71px; /* Matches header height + 1px for spacing */
-  gap: 10px; /* Consistent spacing between elements */
-  box-shadow: none; /* Removes default shadow */
-  border-right: 1px solid #e0e0e0; /* Optional: Adds a subtle border to separate sidebar from content */
+.dashboard-main-cnt {
+  display: flex;
+  height: 100vh;
+  margin-top: 70px;
 }
 
-/* Backdrop for Drawer */
-.MuiBackdrop-root {
-  background-color: rgba(0, 0, 0, 0) !important; /* Makes backdrop transparent */
+.drawer-icon-cnt {
+  position: fixed;
+  top: 70px;
+  left: 20px;
+  height: calc(100vh - 70px);
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease, padding 0.3s ease;
+  width: 60px;
+  z-index: 1000;
+  overflow: hidden;
 }
 
-/* Sidebar Icon/Image */
-.slideimg {
-  width: 35px; /* Consistent size for icons/images */
-  margin: 0 10px; /* Horizontal spacing for the image */
+.drawer-icon-cnt.open {
+  width: 200px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
 }
 
-/* Sidebar Item */
-.slidename {
+.drawer-icon-item {
   display: flex;
   align-items: center;
-  padding: 10px 16px; /* Consistent padding for better click area */
-  border-top-right-radius: 20px;
-  border-bottom-right-radius: 20px;
-  transition: background-color 0.3s ease; /* Smooth hover effect */
+  margin: 10px 0; /* Reduced from 20px to 10px */
+  width: 100%;
+  cursor: pointer;
+  overflow: hidden;
+  transition: background-color 0.3s ease;
 }
 
-/* Sidebar Item Hover */
-.slidename:hover {
-  background-color: rgba(254, 161, 30, 0.7); /* Highlight color on hover */
-  cursor: pointer; /* Adds a pointer cursor for better UX */
+.drawer-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  color: #333;
+  width: 40px;
+  height: 40px;
+  transition: transform 0.3s ease;
+}
+
+.drawer-icon-text {
+  display: none;
+  margin-left: 10px;
+  font-size: 16px;
+  color: #333;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.drawer-icon-cnt.open .drawer-icon-text {
+  display: inline-block;
+  opacity: 1;
+}
+
+.drawer-icon-item:hover {
+  background-color: #fa8805;
+  border-radius: 10px;
+}
+
+.dashboard-outlet-cnt {
+  margin-left: 0px;
+  padding: 10px;
+  width: calc(100% - 60px);
+}
+
+@media only screen and (max-width: 480px) {
+  .drawer-icon-cnt {
+    width: 50px;
+  }
+
+  .drawer-icon-cnt.open {
+    width: 150px;
+  }
+
+  .dashboard-outlet-cnt {
+    margin-left: 50px;
+    width: calc(100% - 50px);
+  }
+
+  .drawer-icon-item {
+    margin: 8px 0; /* Reduced gap for smaller screens */
+  }
+
+  .drawer-icon {
+    font-size: 20px;
+    width: 30px;
+    height: 30px;
+  }
+
+  .drawer-icon-text {
+    font-size: 14px;
+  }
+}
+
+@media only screen and (min-width: 481px) and (max-width: 768px) {
+  .drawer-icon-cnt {
+    width: 60px;
+  }
+
+  .drawer-icon-cnt.open {
+    width: 180px;
+  }
+
+  .dashboard-outlet-cnt {
+    margin-left: 60px;
+    width: calc(100% - 60px);
+  }
+
+  .drawer-icon-item {
+    margin: 10px 0; /* Reduced gap */
+  }
+
+  .drawer-icon {
+    font-size: 22px;
+    width: 35px;
+    height: 35px;
+  }
+
+  .drawer-icon-text {
+    font-size: 15px;
+  }
+}
+
+@media only screen and (min-width: 769px) and (max-width: 1024px) {
+  .drawer-icon-cnt {
+    width: 70px;
+  }
+
+  .drawer-icon-cnt.open {
+    width: 200px;
+  }
+
+  .dashboard-outlet-cnt {
+    margin-left: 70px;
+    width: calc(100% - 70px);
+  }
+
+  .drawer-icon-item {
+    margin: 12px 0; /* Adjusted gap */
+  }
+
+  .drawer-icon {
+    font-size: 24px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .drawer-icon-text {
+    font-size: 16px;
+  }
 }

@@ -31,12 +31,12 @@
 .logo {
   display: flex;
   align-items: center;
-  margin-right: 16px;
+  
 }
 
 .logo img {
   width: 40px;
-  margin-right: 8px;
+  margin-left: 1rem;
 }
 
 
@@ -53,40 +53,41 @@
   align-items: center;
   position: relative;
   flex: 1;
-  max-width: 500px;
+  left: 40px;
+  max-width: 660px;
   margin: 0 20px;
 }
 
 .search-container .search-icon {
   position: absolute;
-  left: 29rem;
+  left: 39rem;
   color: #f1f3f4;
 }
 
 .search-container .search-input {
   padding-left: 35px;
-  padding: 10px;
+  padding: 15px;
   width: 100%;
   border: 1px solid #e5e1e1;
   border-radius: 4px;
-  background-color: #f9f9f9; /* Slightly lighter background */
+  background-color: #dedbdb; 
 }
 
 .search-container .search-input:focus {
-  border-color: #0f0f10;
+  border-color: black;
   outline: none;
 }
 
-/* Appbar and account icons */
+
 .Appbar-icons,
 .Account-icons {
   display: flex;
   align-items: center;
-  gap: 25px; /* Space between icons */
+  gap: 25px; 
 }
 
 .Appbar-icons {
-  margin-left: auto; /* Push Appbar-icons to the far right */
+  margin-left: auto;
 }
 
 .Account-icons {
